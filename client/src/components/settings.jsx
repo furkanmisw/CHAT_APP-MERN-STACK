@@ -141,7 +141,7 @@ const Settings = ({ settings, setSettings }) => {
           <input
             type="password"
             placeholder="Old password"
-            id="Old password"
+            id="opassword"
             value={opassword}
             onChange={(e) => setOpassword(e.target.value)}
           />
