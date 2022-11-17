@@ -1,0 +1,277 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+* {
+  margin: 0px;
+  padding: 0px;
+  font-family: "Inter", sans-serif;
+  box-sizing: border-box;
+}
+:root {
+  --bg-color: #283050;
+  --primary-color: #181a20;
+  --input-bg-color: #262a34;
+}
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 1rem;
+}
+
+.loginpage {
+  user-select: none;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-color);
+  color: white;
+  .container {
+    padding: 2rem;
+    width: 400px;
+    border-radius: 8px;
+    background-color: var(--primary-color);
+    h1 {
+      font-size: 36px;
+      font-weight: 500;
+      margin: 1rem 0px 2rem;
+      color: white;
+    }
+
+    input {
+      @keyframes fade {
+        0% {
+          opacity: 0.2;
+          transform: translateY(-10px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0px);
+        }
+      }
+      &#username {
+        animation: fade 0.5s ease;
+      }
+      margin: 1rem 0px 1rem;
+      font-size: 1rem;
+      color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      background-color: var(--input-bg-color);
+      width: 100%;
+      border: none;
+      outline: none;
+      display: block;
+    }
+    img {
+      cursor: pointer;
+      position: absolute;
+      right: 1rem;
+      height: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    button[type="submit"] {
+      font-weight: 500;
+      border: none;
+      margin: 8px 0px;
+      width: 100%;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 1rem;
+      font-size: 1rem;
+      color: white;
+      background-color: #5468ff;
+      &:hover {
+        background-color: #3a4ed8;
+      }
+    }
+    .change {
+      margin-top: 1rem;
+      font-size: 14px;
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      button {
+        font-weight: 500;
+        font-size: 1rem;
+        color: #5468ff;
+        cursor: pointer;
+        border: none;
+        background-color: transparent;
+        margin-left: 6px;
+      }
+    }
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #5468ff;
+  border-radius: 8px;
+}
+.home {
+  overflow: hidden;
+  background-color: var(--bg-color);
+  height: 100vh;
+  width: 100vw;
+  color: white;
+  display: flex;
+  .left {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--primary-color);
+    height: 100vh;
+    min-width: 400px;
+    padding: 20px;
+    padding-bottom: 0px;
+    max-width: 400px;
+    width: 400px;
+    .profile {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      .data {
+        width: 100%;
+        background-color: var(--input-bg-color);
+        padding: 1rem;
+        display: flex;
+        border-radius: 1rem 0px 0px 1rem;
+        align-items: center;
+        padding-right: 10px;
+        img {
+          width: 40px;
+          height: 40px;
+          margin-right: 10px;
+          border-radius: 100%;
+        }
+        p {
+          width: 181px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-size: 20px;
+        }
+      }
+      .buttons {
+        min-width: 80px;
+        height: 72px;
+        border-radius: 0px 1rem 1rem 0px;
+        align-items: center;
+        background-color: var(--input-bg-color);
+        display: flex;
+        justify-content: space-between;
+        padding-right: 10px;
+        button {
+          width: 30px;
+          border: none;
+          background-color: transparent;
+          cursor: pointer;
+          height: 30px;
+          transition: 0.5s ease-in-out;
+        }
+      }
+      .settings {
+        position: absolute;
+        height: 100vh;
+        width: 400px;
+        background-color: var(--primary-color);
+        left: -400px;
+        top: 0px;
+        height: 100vh;
+        transition: 0.5s ease-in-out;
+        &.open {
+          left: 0px;
+        }
+      }
+    }
+    .search {
+      border-radius: 8px;
+      background-color: var(--input-bg-color);
+      &.error {
+        outline: 2px solid red;
+      }
+      form {
+        display: flex;
+        align-items: center;
+      }
+      input {
+        color: white;
+        padding: 1rem;
+        width: 100%;
+        font-size: 1rem;
+        border: none;
+        outline: none;
+        background-color: transparent;
+      }
+      button {
+        cursor: pointer;
+        background-color: transparent;
+        min-width: 24px;
+        height: 24px;
+        border: none;
+        margin-right: 1rem;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+    .rooms {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      flex-direction: column;
+      padding-top: 20px;
+      h1 {
+        font-size: 24px;
+        margin-bottom: 1rem;
+      }
+      ul {
+        padding-right: 10px;
+        flex: 1;
+        overflow-y: auto;
+        li {
+          &.active {
+            background-color: var(--bg-color);
+          }
+          border-radius: 8px;
+          background-color: var(--input-bg-color);
+          display: flex;
+          margin: 1rem 0px;
+          align-items: center;
+          cursor: pointer;
+          padding: 1rem;
+          img {
+            width: 35px;
+            height: 35px;
+            border-radius: 100%;
+            margin-right: 10px;
+          }
+          p {
+            font-size: 18px;
+          }
+        }
+      }
+    }
+  }
+  .plc {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    p {
+      font-size: 18px;
+    }
+  }
+  .messages {
+    overflow: hidden;
+
+    background-color: var(--input-bg-color);
+  }
+}
