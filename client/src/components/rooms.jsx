@@ -4,7 +4,7 @@ import Room from "./room";
 import { Context } from "./home";
 
 const Rooms = () => {
-  const { messagePerson } = useContext(Context);
+  const { messagePerson, setMessagePerson } = useContext(Context);
   const [hasMore, setHasMore] = useState(true);
   const [rooms, setRooms] = useState([]);
 
@@ -32,8 +32,14 @@ const Rooms = () => {
       <h1>Messages</h1>
       <ul onScroll={onScroll}>
         {rooms.map((room) => {
-          const active = messagePerson?.room?._id === room._id;
-          return <Room {...{ active, room }} key={room._id} />;
+          const active = messagePerson?.room?._id === room.room._id;
+          return (
+            <Room
+              {...{ active, room }}
+              key={room._id}
+              tap={() => setMessagePerson(room)}
+            />
+          );
         })}
       </ul>
     </div>

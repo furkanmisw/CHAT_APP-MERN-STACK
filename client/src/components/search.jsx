@@ -13,8 +13,10 @@ const Search = () => {
   const _searchUsername = () =>
     //* @api/search/:username
     api("/profile/" + username, "GET").then((res) => {
-      if (res.status === 200) setMessagePerson(res.data);
-      else {
+      if (res.status === 200) {
+        setMessagePerson(res.data);
+        setUsername("");
+      } else {
         setError(true);
         setTimeout(() => setError(false), 10000);
       }
@@ -45,9 +47,12 @@ const Search = () => {
           ref={inputRef}
         />
         {username.length > 0 && (
-          <button onClick={() => setUsername("")} style={{ width: "36px" }}>
-            <img src="/icons/close.svg" alt="close-icon" />
-          </button>
+          <img
+            onClick={() => setUsername("")}
+            src="/icons/close.svg"
+            alt="close-icon"
+            className="clear"
+          />
         )}
         <button type={"submit"}>
           <img src="/icons/search.svg" alt="search-icon" />
