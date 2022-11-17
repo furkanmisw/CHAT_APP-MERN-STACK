@@ -32,7 +32,6 @@ const login = asyncErrorWrapper(async (req, res) => {
 });
 
 const signup = asyncErrorWrapper(async (req, res) => {
-
   const user = await users.create(req.body);
   const token = _generateToken(user._id);
   res.cookie("token", token, {
@@ -46,8 +45,14 @@ const signup = asyncErrorWrapper(async (req, res) => {
   res.status(201).json({ message: "User created" });
 });
 
+const logout = asyncErrorWrapper(async (req, res) => {
+  res.clearCookie("token");
+  res.clearCookie("isloggedin");
+  res.status(401).json({ message: "Logout successfull" });
+});
 
 router.route("/login").post(login);
 router.route("/signup").post(signup);
+router.route("/logout").post(logout);
 
 module.exports = router;

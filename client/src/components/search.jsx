@@ -8,19 +8,23 @@ const Search = () => {
   const [error, setError] = useState(false);
   const [username, setUsername] = useState("");
   const inputRef = useRef();
-  const { setMessagePerson } = useContext(Context);
+  const { setMessagePerson, messagePerson } = useContext(Context);
 
   const _searchUsername = () =>
     //* @api/search/:username
-    api("/profile/" + username, "GET").then((res) => {
-      if (res.status === 200) {
-        setMessagePerson(res.data);
-        setUsername("");
-      } else {
-        setError(true);
-        setTimeout(() => setError(false), 10000);
-      }
-    });
+    {
+      if (messagePerson?.user.username === username) return setUsername("");
+      api("/profile/" + username, "GET").then((res) => {
+        if (res.status === 200) {
+          setUsername("");
+          setMessagePerson();
+          setTimeout(() => setMessagePerson(res.data), 0);
+        } else {
+          setError(true);
+          setTimeout(() => setError(false), 10000);
+        }
+      });
+    };
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -41,7 +45,7 @@ const Search = () => {
           required
           minLength={6}
           maxLength={36}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => setUsername(e.target.value.toLowerCase())}
           value={username}
           placeholder={"Enter username"}
           ref={inputRef}

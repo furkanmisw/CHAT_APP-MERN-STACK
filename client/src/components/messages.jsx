@@ -1,17 +1,135 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState, useRef } from "react";
+import api from "../api";
 import { Context } from "./home";
 
-const Messages = () => {
-  const { messagePerson, setMessagePerson } = useContext(Context);
+export const DATE_CALC = (date) => {
+  if (!date) return "";
+  const d = new Date(date);
+  const now = new Date(Date.now());
+  const diff = now - d;
+  const diffWeek = diff / (1000 * 60 * 60 * 24 * 7);
+  if (diffWeek > 4) return d.toLocaleDateString();
+  if (diffWeek > 1) return Math.floor(diffWeek) + "w ago";
+  const diffDay = diff / (1000 * 60 * 60 * 24);
+  if (diffDay > 1) return Math.floor(diffDay) + "d ago";
+  const diffHour = diff / (1000 * 60 * 60);
+  if (diffHour > 1) return Math.floor(diffHour) + "h ago";
+  const diffMin = diff / (1000 * 60);
+  if (diffMin > 1) return Math.floor(diffMin) + "m ago";
+  return "now";
+};
 
-  useEffect(() => {}, [messagePerson]);
+const Messages = () => {
+  const listRef = useRef();
+  const messageInputRef = useRef();
+
+  const { messagePerson, setMessagePerson, profile, setRooms } =
+    useContext(Context);
+  const [messages, setMessages] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const _getMessages = () =>
+    api("/messages/" + messagePerson.room._id).then((res) => {
+      setMessages(res.data);
+      setHasMore(res.data.length === 20);
+      setTimeout(
+        () => (listRef.current.scrollTop = listRef.current.scrollHeight),
+        1
+      );
+    });
+
+  useEffect(() => {
+    if (messagePerson.room) {
+      _getMessages();
+    } else {
+      setHasMore(false);
+    }
+    messageInputRef.current.focus();
+  }, []);
+
+  const [message, setMessage] = useState("");
+
+  const _send = (e) => {
+    e.preventDefault();
+    setMessage("");
+    setMessages((p) => [...p, { message, date: Date.now() }]);
+    setTimeout(
+      () => (listRef.current.scrollTop = listRef.current.scrollHeight),
+      0
+    );
+    if (messagePerson.room) {
+      setRooms((prev) => [
+        {
+          ...messagePerson,
+          room: {
+            lastmessage: message,
+            _id: messagePerson.room._id,
+            updatedAt: Date.now(),
+          },
+        },
+        ...prev.filter((room) => room.room._id !== messagePerson.room._id),
+      ]);
+      const obj = {
+        message,
+        room: messagePerson?.room?._id,
+      };
+      api("/messages", "POST", obj).then((res) => {
+        if (res.status !== 200) {
+          console.log(res);
+          setMessage(message);
+          setMessages((p) => p.slice(0, p.length - 1));
+        }
+      });
+    } else {
+      const obj = {
+        message,
+        date: Date.now(),
+        receiver: messagePerson.user._id,
+      };
+      api("/messages", "POST", obj).then((res) => {
+        if (res.status === 201) {
+          setRooms((prev) => [
+            {
+              room: { _id: res.data.roomid, lastmessage: message },
+              user: messagePerson.user,
+            },
+            ...prev,
+          ]);
+          setMessagePerson((prev) => ({
+            ...prev,
+            room: { _id: res.data.roomid },
+          }));
+        } else {
+          console.log(res);
+          setMessage(message);
+          setMessages((p) => p.slice(0, p.length - 1));
+        }
+      });
+    }
+  };
+
+  const onScroll = () => {
+    const nowH = listRef.current.scrollHeight;
+    const top = listRef.current.scrollTop;
+    if (listRef.current.scrollTop === 0 && hasMore) {
+      api(`/messages/${messagePerson.room._id}?skip=${messages.length}`).then(
+        (res) => {
+          setMessages((p) => [...res.data, ...p]);
+          setHasMore(res.data.length === 20);
+          setTimeout(() => {
+            const diff = listRef.current.scrollHeight - nowH;
+            listRef.current.scrollTop = top + diff;
+          }, 0);
+        }
+      );
+    }
+  };
 
   return (
     <div className="messages">
       <div className="header">
         <div className="content">
           <div className="l">
-            <img src={messagePerson?.user?.pp || "/pp.jpg"} alt="" />
+            <img src={messagePerson?.user?.pp || "/pp.jpg"} alt="pp" />
             <p>{messagePerson?.user?.username}</p>
           </div>
           <button onClick={() => setMessagePerson()}>
@@ -19,212 +137,36 @@ const Messages = () => {
           </button>
         </div>
       </div>
-      <ul className="body">
-        <li>1</li>
-        <li>2</li>
-        <li>3</li>
-        <li>4</li>
-        <li>5</li>
-        <li>6</li>
-        <li>7</li>
-        <li>8</li>
-        <li>9</li>
-        <li>10</li>
-        <li>11</li>
-        <li>12</li>
-        <li>13</li>
-        <li>14</li>
-        <li>15</li>
-        <li>16</li>
-        <li>17</li>
-        <li>18</li>
-        <li>19</li>
-        <li>20</li>
-        <li>21</li>
-        <li>22</li>
-        <li>23</li>
-        <li>24</li>
-        <li>25</li>
-        <li>26</li>
-        <li>27</li>
-        <li>28</li>
-        <li>29</li>
-        <li>30</li>
-        <li>31</li>
-        <li>32</li>
-        <li>33</li>
-        <li>34</li>
-        <li>35</li>
-        <li>36</li>
-        <li>37</li>
-        <li>38</li>
-        <li>39</li>
-        <li>40</li>
-        <li>41</li>
-        <li>42</li>
-        <li>43</li>
-        <li>44</li>
-        <li>45</li>
-        <li>46</li>
-        <li>47</li>
-        <li>48</li>
-        <li>49</li>
-        <li>50</li>
-        <li>51</li>
-        <li>52</li>
-        <li>53</li>
-        <li>54</li>
-        <li>55</li>
-        <li>56</li>
-        <li>57</li>
-        <li>58</li>
-        <li>59</li>
-        <li>60</li>
-        <li>61</li>
-        <li>62</li>
-        <li>63</li>
-        <li>64</li>
-        <li>65</li>
-        <li>66</li>
-        <li>67</li>
-        <li>68</li>
-        <li>69</li>
-        <li>70</li>
-        <li>71</li>
-        <li>72</li>
-        <li>73</li>
-        <li>74</li>
-        <li>75</li>
-        <li>76</li>
-        <li>77</li>
-        <li>78</li>
-        <li>79</li>
-        <li>80</li>
-        <li>81</li>
-        <li>82</li>
-        <li>83</li>
-        <li>84</li>
-        <li>85</li>
-        <li>86</li>
-        <li>87</li>
-        <li>88</li>
-        <li>89</li>
-        <li>90</li>
-        <li>91</li>
-        <li>92</li>
-        <li>93</li>
-        <li>94</li>
-        <li>95</li>
-        <li>96</li>
-        <li>97</li>
-        <li>98</li>
-        <li>99</li>
-        <li>100</li>
-        <li>101</li>
-        <li>102</li>
-        <li>103</li>
-        <li>104</li>
-        <li>105</li>
-        <li>106</li>
-        <li>107</li>
-        <li>108</li>
-        <li>109</li>
-        <li>110</li>
-        <li>111</li>
-        <li>112</li>
-        <li>113</li>
-        <li>114</li>
-        <li>115</li>
-        <li>116</li>
-        <li>117</li>
-        <li>118</li>
-        <li>119</li>
-        <li>120</li>
-        <li>121</li>
-        <li>122</li>
-        <li>123</li>
-        <li>124</li>
-        <li>125</li>
-        <li>126</li>
-        <li>127</li>
-        <li>128</li>
-        <li>129</li>
-        <li>130</li>
-        <li>131</li>
-        <li>132</li>
-        <li>133</li>
-        <li>134</li>
-        <li>135</li>
-        <li>136</li>
-        <li>137</li>
-        <li>138</li>
-        <li>139</li>
-        <li>140</li>
-        <li>141</li>
-        <li>142</li>
-        <li>143</li>
-        <li>144</li>
-        <li>145</li>
-        <li>146</li>
-        <li>147</li>
-        <li>148</li>
-        <li>149</li>
-        <li>150</li>
-        <li>151</li>
-        <li>152</li>
-        <li>153</li>
-        <li>154</li>
-        <li>155</li>
-        <li>156</li>
-        <li>157</li>
-        <li>158</li>
-        <li>159</li>
-        <li>160</li>
-        <li>161</li>
-        <li>162</li>
-        <li>163</li>
-        <li>164</li>
-        <li>165</li>
-        <li>166</li>
-        <li>167</li>
-        <li>168</li>
-        <li>169</li>
-        <li>170</li>
-        <li>171</li>
-        <li>172</li>
-        <li>173</li>
-        <li>174</li>
-        <li>175</li>
-        <li>176</li>
-        <li>177</li>
-        <li>178</li>
-        <li>179</li>
-        <li>180</li>
-        <li>181</li>
-        <li>182</li>
-        <li>183</li>
-        <li>184</li>
-        <li>185</li>
-        <li>186</li>
-        <li>187</li>
-        <li>188</li>
-        <li>189</li>
-        <li>190</li>
-        <li>191</li>
-        <li>192</li>
-        <li>193</li>
-        <li>194</li>
-        <li>195</li>
-        <li>196</li>
-        <li>197</li>
-        <li>198</li>
-        <li>199</li>
-        <li>200</li>
+      <ul className="body" ref={listRef} onScroll={onScroll}>
+        {messages.map((m) => {
+          const left = m.sender === messagePerson.user._id;
+          const pp = left
+            ? messagePerson.user.pp || "/pp.jpg"
+            : profile.pp || "/pp.jpg";
+          const { message, date } = m;
+
+          return (
+            <li className={left ? "" : "my"}>
+              <img src={pp} alt="pp" />
+              <div className="msg">
+                <p>{message}</p>
+                <div>{DATE_CALC(date)}</div>
+              </div>
+            </li>
+          );
+        })}
       </ul>
       <div className="send">
-        <form>
-          <input type="text" />
-          <button>
+        <form onSubmit={_send}>
+          <input
+            type="text"
+            onChange={(e) => setMessage(e.target.value)}
+            value={message}
+            required
+            maxLength={250}
+            ref={messageInputRef}
+          />
+          <button type="submit">
             <img src="/icons/send.svg" alt="send-icon" />
           </button>
         </form>

@@ -4,9 +4,9 @@ import Room from "./room";
 import { Context } from "./home";
 
 const Rooms = () => {
-  const { messagePerson, setMessagePerson } = useContext(Context);
+  const { messagePerson, setMessagePerson, setRooms, rooms } =
+    useContext(Context);
   const [hasMore, setHasMore] = useState(true);
-  const [rooms, setRooms] = useState([]);
 
   const _getRooms = (skip) =>
     //* @api/rooms/
@@ -36,8 +36,11 @@ const Rooms = () => {
           return (
             <Room
               {...{ active, room }}
-              key={room._id}
-              tap={() => setMessagePerson(room)}
+              key={room.room._id}
+              tap={() => {
+                setMessagePerson();
+                setTimeout(() => setMessagePerson(room), 0);
+              }}
             />
           );
         })}

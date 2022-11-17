@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [show, setShow] = useState(false);
-  
+
   const setError = (message) =>
     toast.error(message, { position: "bottom-right" });
 
@@ -78,7 +78,7 @@ const Login = () => {
         </div>
       </div>
 
-      <ToastContainer />
+      <ToastContainer theme="dark" />
     </div>
   );
 };
