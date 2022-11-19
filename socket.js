@@ -3,7 +3,7 @@ const cookie = require("cookie");
 const jwt = require("jsonwebtoken");
 
 const c = (server) => {
-  let sockets = {};
+  let sockets = {}; // production code would use a database
   const io = new Server(server, {
     cors: {
       origin: "*",
