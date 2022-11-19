@@ -14,3 +14,5 @@
     ├── ...
 
 # MongoDB ExpressJS ReactJS NodeJS + Socket.io
+
+## socket.io sometimes it doesn't work 
