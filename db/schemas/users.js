@@ -34,7 +34,6 @@ const users = new mongoose.Schema(
       select: false,
     },
     pp: String,
-    socketId: String,
   },
   {
     versionKey: false,

@@ -1,6 +1,7 @@
 import React, { useEffect, useContext, useState, useRef } from "react";
 import api from "../api";
 import { Context } from "./home";
+import { io } from "socket.io-client";
 
 export const DATE_CALC = (date) => {
   if (!date) return "";
@@ -20,6 +21,8 @@ export const DATE_CALC = (date) => {
 };
 
 const Messages = () => {
+  const [message, setMessage] = useState("");
+  const socket = io();
   const listRef = useRef();
   const messageInputRef = useRef();
 
@@ -33,20 +36,50 @@ const Messages = () => {
       setHasMore(res.data.length === 20);
       setTimeout(
         () => (listRef.current.scrollTop = listRef.current.scrollHeight),
-        1
+        50
       );
     });
 
   useEffect(() => {
+    socket.on("message", (data) => {
+      setTimeout(() => {
+        setMessages((pp) => [...pp]);
+      }, 500);
+      console.log("SOCKET");
+
+      console.log("SOCKET_MESSAGE");
+      setMessages((prev) => [
+        ...prev,
+        {
+          message: data,
+          sender: messagePerson?.user?._id,
+          date: Date.now(),
+        },
+      ]);
+      setRooms((prev) => [
+        {
+          ...messagePerson,
+          room: {
+            lastmessage: message,
+            _id: messagePerson.room._id,
+            updatedAt: Date.now(),
+          },
+        },
+        ...prev.filter((room) => room.room._id !== messagePerson.room._id),
+      ]);
+      setTimeout(() => {
+        listRef.current.scrollTop = listRef.current.scrollHeight;
+        setMessages((prev) => [...prev]);
+      }, 200);
+    });
+
     if (messagePerson.room) {
       _getMessages();
     } else {
       setHasMore(false);
     }
     messageInputRef.current.focus();
-  }, []);
-
-  const [message, setMessage] = useState("");
+  }, []); 
 
   const _send = (e) => {
     e.preventDefault();
@@ -54,9 +87,10 @@ const Messages = () => {
     setMessages((p) => [...p, { message, date: Date.now() }]);
     setTimeout(
       () => (listRef.current.scrollTop = listRef.current.scrollHeight),
-      0
+      1
     );
     if (messagePerson.room) {
+      socket.emit("message", { to: messagePerson.user._id, message });
       setRooms((prev) => [
         {
           ...messagePerson,
@@ -73,6 +107,8 @@ const Messages = () => {
         room: messagePerson?.room?._id,
       };
       api("/messages", "POST", obj).then((res) => {
+        if (res.status === 200) {
+        }
         if (res.status !== 200) {
           console.log(res);
           setMessage(message);
@@ -91,6 +127,7 @@ const Messages = () => {
             {
               room: { _id: res.data.roomid, lastmessage: message },
               user: messagePerson.user,
+              updatedAt: Date.now(),
             },
             ...prev,
           ]);
@@ -98,6 +135,7 @@ const Messages = () => {
             ...prev,
             room: { _id: res.data.roomid },
           }));
+          socket.emit("message", { to: messagePerson.user._id, message });
         } else {
           console.log(res);
           setMessage(message);
@@ -118,7 +156,7 @@ const Messages = () => {
           setTimeout(() => {
             const diff = listRef.current.scrollHeight - nowH;
             listRef.current.scrollTop = top + diff;
-          }, 0);
+          }, 1);
         }
       );
     }
@@ -159,9 +197,9 @@ const Messages = () => {
       <div className="send">
         <form onSubmit={_send}>
           <input
-            type="text"
             onChange={(e) => setMessage(e.target.value)}
             value={message}
+            type="text"
             required
             maxLength={250}
             ref={messageInputRef}

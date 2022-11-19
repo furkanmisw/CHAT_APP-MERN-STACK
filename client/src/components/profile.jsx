@@ -1,8 +1,7 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Context } from "./home";
 import api from "../api";
 import Settings from "./settings";
-import { useState } from "react";
 
 const Profile = () => {
   const { setProfile, profile } = useContext(Context);
@@ -10,6 +9,7 @@ const Profile = () => {
   const _getProfile = () =>
     //* @api/profile/
     api("/profile").then((res) => res.status === 200 && setProfile(res.data));
+
 
   useEffect(() => {
     _getProfile(setProfile);

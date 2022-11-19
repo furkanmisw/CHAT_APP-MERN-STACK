@@ -10,6 +10,8 @@ const Home = () => {
   const [profile, setProfile] = useState();
   const [rooms, setRooms] = useState([]);
 
+  useEffect(() => {}, []);
+
   const value = {
     messagePerson,
     setMessagePerson,
@@ -30,6 +32,32 @@ const Home = () => {
           </div>
         )}
       </Context.Provider>
+      {/* <div
+        style={{
+          position: "fixed",
+          top: "0px",
+          left: "0px",
+          width: "200px",
+          height: "100px",
+          background: "orange",
+        }}
+        className="test"
+      >
+        <button
+          onClick={() => {
+            socket.emit("message", {
+              to: document.getElementById("test1").value,
+              data: {
+                message: document.getElementById("test2").value,
+              },
+            });
+          }}
+        >
+          HEY
+        </button>
+        <input type="text" id="test1" />
+        <input type="text" id="test2" />
+      </div> */}
     </div>
   );
 };

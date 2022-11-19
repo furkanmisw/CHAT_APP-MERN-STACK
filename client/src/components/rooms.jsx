@@ -38,6 +38,7 @@ const Rooms = () => {
               {...{ active, room }}
               key={room.room._id}
               tap={() => {
+                if (messagePerson?.room?._id === room.room._id) return;
                 setMessagePerson();
                 setTimeout(() => setMessagePerson(room), 0);
               }}
